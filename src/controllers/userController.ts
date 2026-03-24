@@ -6,7 +6,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import type { User } from "../types/userType.js";
 
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
+const registerUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { name, email, password } = req.body;
 
   // validation
@@ -52,10 +56,16 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
         expiresIn: "7d",
       },
     );
-    res.json({ accessToken: token });
+
+    // Response
+    res.status(201).json({ accessToken: token });
   } catch (err) {
     return next(createHttpError(500, "Error while signing the jwt token."));
   }
 };
 
-export default createUser;
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  res.json({ message: "OK" });
+};
+
+export { registerUser, loginUser };
