@@ -1,6 +1,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import userRouter from "./routes/userRoute.js";
+import bookRouter from "./routes/bookRoute.js";
 import errorMiddleware from "./middleware/middleware.js";
 
 const app = express();
@@ -13,6 +14,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/users", userRouter);
+app.use("api/books", bookRouter);
 
 // Global error handler
 app.use(errorMiddleware);
