@@ -8,6 +8,26 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// get All Books
+export const getBooks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const books = await Book.find().populate("author", "name email");
+
+    res.json({
+      success: true,
+      count: books.length,
+      data: books,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// create book
 export const createBook = async (
   req: Request,
   res: Response,
@@ -59,6 +79,7 @@ export const createBook = async (
   }
 };
 
+// update book
 export const updateBook = async (
   req: Request,
   res: Response,
@@ -117,6 +138,7 @@ export const updateBook = async (
   }
 };
 
+// delete book
 export const deleteBook = async (
   req: Request,
   res: Response,

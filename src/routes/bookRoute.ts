@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getBooks,
   createBook,
   updateBook,
   deleteBook,
@@ -28,6 +29,9 @@ const upload = multer({
   storage,
   limits: { fileSize: 3e7 },
 });
+
+// get
+router.get("/", getBooks);
 
 // create
 router.post(
