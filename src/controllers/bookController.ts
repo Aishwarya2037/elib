@@ -1,17 +1,12 @@
-// import type { Request, Response, NextFunction } from "express";
-
-// const createBook = async (req: Request, res: Response, next: NextFunction) => {
-//   // const {} = req.body;
-//   console.log("files", req.files);
-
-//   res.json({});
-// };
-
-// export { createBook };
-
 import type { Request, Response, NextFunction } from "express";
 import createHttpError from "http-errors";
 import Book from "../models/bookModel.js";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const createBook = async (
   req: Request,
@@ -58,6 +53,102 @@ export const createBook = async (
       success: true,
       message: "Book created successfully",
       data: book,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const { title, genre } = req.body;
+
+    const book = await Book.findById(id);
+    if (!book) {
+      return next(createHttpError(404, "Book not found"));
+    }
+
+    const files = req.files as
+      | { [fieldname: string]: Express.Multer.File[] }
+      | undefined;
+
+    // ✅ file path
+    const uploadPath = path.resolve(__dirname, "../../public/data/uploads");
+
+    // ✅ update cover image
+    if (files?.coverImage?.[0]) {
+      // delete old
+      const oldImagePath = path.join(uploadPath, book.coverImage);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+
+      book.coverImage = files.coverImage[0].filename;
+    }
+
+    // ✅ update pdf
+    if (files?.file?.[0]) {
+      const oldFilePath = path.join(uploadPath, book.file);
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath);
+      }
+
+      book.file = files.file[0].filename;
+    }
+
+    // ✅ update fields
+    if (title) book.title = title;
+    if (genre) book.genre = genre;
+
+    await book.save();
+
+    res.json({
+      success: true,
+      message: "Book updated successfully",
+      data: book,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+
+    const book = await Book.findById(id);
+    if (!book) {
+      return next(createHttpError(404, "Book not found"));
+    }
+
+    const uploadPath = path.resolve(__dirname, "../../public/data/uploads");
+
+    // ✅ delete cover image
+    const imagePath = path.join(uploadPath, book.coverImage);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
+
+    // ✅ delete pdf
+    const filePath = path.join(uploadPath, book.file);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    await Book.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: "Book deleted successfully",
     });
   } catch (error) {
     next(error);

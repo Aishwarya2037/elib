@@ -1,5 +1,9 @@
 import express from "express";
-import { createBook } from "../controllers/bookController.js";
+import {
+  createBook,
+  updateBook,
+  deleteBook,
+} from "../controllers/bookController.js";
 import path from "node:path";
 import multer from "multer";
 import { fileURLToPath } from "node:url";
@@ -25,6 +29,7 @@ const upload = multer({
   limits: { fileSize: 3e7 },
 });
 
+// create
 router.post(
   "/",
   upload.fields([
@@ -33,5 +38,22 @@ router.post(
   ]),
   createBook,
 );
+
+// update
+router.put(
+  "/:id",
+  (req, res, next) => {
+    console.log("PUT ROUTE HIT");
+    next();
+  },
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+  ]),
+  updateBook,
+);
+
+// delete
+router.delete("/:id", deleteBook);
 
 export default router;
