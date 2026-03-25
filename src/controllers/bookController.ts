@@ -27,6 +27,30 @@ export const getBooks = async (
   }
 };
 
+// get one book
+export const getBookById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+
+    const book = await Book.findById(id).populate("author", "name email");
+
+    if (!book) {
+      return next(createHttpError(404, "Book not found"));
+    }
+
+    res.json({
+      success: true,
+      data: book,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // create book
 export const createBook = async (
   req: Request,

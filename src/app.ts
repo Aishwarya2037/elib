@@ -4,9 +4,18 @@ import userRouter from "./routes/userRoute.js";
 import bookRouter from "./routes/bookRoute.js";
 import errorMiddleware from "./middleware/middleware.js";
 import path from "node:path";
+import cors from "cors";
 import { fileURLToPath } from "node:url";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", // frontend URL (React / Next.js)
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 

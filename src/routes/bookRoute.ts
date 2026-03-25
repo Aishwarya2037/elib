@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getBooks,
+  getBookById,
   createBook,
   updateBook,
   deleteBook,
@@ -32,6 +33,7 @@ const upload = multer({
 
 // get
 router.get("/", getBooks);
+router.get("/:id", getBookById);
 
 // create
 router.post(
